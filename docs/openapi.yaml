@@ -1,0 +1,281 @@
+openapi: 3.0.3
+info:
+  title: Missão Resgate Venezuela API
+  description: >
+    API REST para apoio à busca de pessoas desaparecidas após desastres naturais.
+    Projeto acadêmico — todos os dados utilizados são fictícios.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Ambiente local
+
+tags:
+  - name: Health
+  - name: Pessoas
+  - name: Avistamentos
+  - name: Locais de Apoio
+  - name: Estatísticas
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Verifica se a API está online
+      responses:
+        '200':
+          description: API funcionando
+          content:
+            application/json:
+              example:
+                status: online
+                servico: Missão Resgate Venezuela API
+                timestamp: '2026-07-08T20:00:00.000Z'
+
+  /api/pessoas:
+    post:
+      tags: [Pessoas]
+      summary: Cadastra uma nova pessoa desaparecida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PessoaInput'
+      responses:
+        '201':
+          description: Pessoa cadastrada com sucesso
+        '400':
+          description: Dados inválidos
+    get:
+      tags: [Pessoas]
+      summary: Lista pessoas cadastradas (com filtros e paginação)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: nome
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string, enum: [desaparecido, encontrado_vivo, encontrado_falecido, em_verificacao] }
+        - in: query
+          name: idade_min
+          schema: { type: integer }
+        - in: query
+          name: idade_max
+          schema: { type: integer }
+        - in: query
+          name: local_desaparecimento
+          schema: { type: string }
+        - in: query
+          name: data_de
+          schema: { type: string, format: date }
+        - in: query
+          name: data_ate
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Lista paginada de pessoas
+
+  /api/pessoas/{id}:
+    get:
+      tags: [Pessoas]
+      summary: Busca uma pessoa pelo ID
+      parameters:
+        - $ref: '#/components/parameters/PessoaId'
+      responses:
+        '200': { description: Pessoa encontrada }
+        '404': { description: Pessoa não encontrada }
+    put:
+      tags: [Pessoas]
+      summary: Atualiza os dados de uma pessoa
+      parameters:
+        - $ref: '#/components/parameters/PessoaId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PessoaInput'
+      responses:
+        '200': { description: Pessoa atualizada }
+        '400': { description: Dados inválidos }
+        '404': { description: Pessoa não encontrada }
+    delete:
+      tags: [Pessoas]
+      summary: Exclui um registro de pessoa
+      parameters:
+        - $ref: '#/components/parameters/PessoaId'
+      responses:
+        '204': { description: Excluído com sucesso }
+        '404': { description: Pessoa não encontrada }
+
+  /api/pessoas/{id}/status:
+    patch:
+      tags: [Pessoas]
+      summary: Atualiza apenas o status de uma pessoa
+      parameters:
+        - $ref: '#/components/parameters/PessoaId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [desaparecido, encontrado_vivo, encontrado_falecido, em_verificacao]
+      responses:
+        '200': { description: Status atualizado }
+        '400': { description: Status inválido }
+        '404': { description: Pessoa não encontrada }
+
+  /api/pessoas/{id}/avistamentos:
+    get:
+      tags: [Pessoas]
+      summary: Consulta o histórico de avistamentos de uma pessoa
+      parameters:
+        - $ref: '#/components/parameters/PessoaId'
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+      responses:
+        '200': { description: Histórico de avistamentos }
+        '404': { description: Pessoa não encontrada }
+
+  /api/avistamentos:
+    post:
+      tags: [Avistamentos]
+      summary: Registra um novo avistamento
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvistamentoInput'
+      responses:
+        '201': { description: Avistamento registrado }
+        '400': { description: Dados inválidos }
+        '404': { description: Pessoa não encontrada }
+    get:
+      tags: [Avistamentos]
+      summary: Lista avistamentos (com paginação e filtro por pessoa_id)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: pessoa_id
+          schema: { type: integer }
+      responses:
+        '200': { description: Lista paginada de avistamentos }
+
+  /api/locais-apoio:
+    post:
+      tags: [Locais de Apoio]
+      summary: Cadastra um local de apoio (abrigo, hospital, etc.)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocalApoioInput'
+      responses:
+        '201': { description: Local cadastrado }
+        '400': { description: Dados inválidos }
+    get:
+      tags: [Locais de Apoio]
+      summary: Lista locais de apoio (com paginação e filtro por tipo)
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+        - in: query
+          name: tipo
+          schema: { type: string, enum: [abrigo, hospital, centro_atendimento, ponto_distribuicao] }
+      responses:
+        '200': { description: Lista paginada de locais de apoio }
+
+  /api/locais-apoio/{id}:
+    get:
+      tags: [Locais de Apoio]
+      summary: Busca um local de apoio pelo ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Local encontrado }
+        '404': { description: Local não encontrado }
+
+  /api/estatisticas:
+    get:
+      tags: [Estatísticas]
+      summary: Consulta estatísticas gerais do sistema
+      responses:
+        '200':
+          description: Estatísticas gerais
+          content:
+            application/json:
+              example:
+                total_pessoas_cadastradas: 20
+                pessoas_por_status:
+                  desaparecido: 5
+                  encontrado_vivo: 5
+                  encontrado_falecido: 5
+                  em_verificacao: 5
+                total_avistamentos_registrados: 15
+                total_locais_apoio_cadastrados: 10
+
+components:
+  parameters:
+    PessoaId:
+      in: path
+      name: id
+      required: true
+      schema: { type: integer }
+  schemas:
+    PessoaInput:
+      type: object
+      required: [nome, idade, data_desaparecimento]
+      properties:
+        nome: { type: string }
+        idade: { type: integer }
+        sexo: { type: string }
+        data_desaparecimento: { type: string, format: date }
+        local_desaparecimento: { type: string }
+        descricao_fisica: { type: string }
+        foto_url: { type: string }
+        status: { type: string, enum: [desaparecido, encontrado_vivo, encontrado_falecido, em_verificacao] }
+        nome_contato_familiar: { type: string }
+        telefone_contato_familiar: { type: string }
+    AvistamentoInput:
+      type: object
+      required: [pessoa_id, data_avistamento, local_avistamento]
+      properties:
+        pessoa_id: { type: integer }
+        data_avistamento: { type: string, format: date }
+        local_avistamento: { type: string }
+        descricao: { type: string }
+        nome_testemunha: { type: string }
+        contato_testemunha: { type: string }
+    LocalApoioInput:
+      type: object
+      required: [nome, tipo, endereco]
+      properties:
+        nome: { type: string }
+        tipo: { type: string, enum: [abrigo, hospital, centro_atendimento, ponto_distribuicao] }
+        endereco: { type: string }
+        capacidade: { type: integer }
+        contato: { type: string }

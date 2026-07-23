@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "Missão Resgate Venezuela API",
+    "description": "Coleção de testes para a API REST de apoio à busca de pessoas desaparecidas (dados fictícios).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "pessoaId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Pessoas - Cadastrar",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/pessoas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Fulano Fictício de Teste\",\n  \"idade\": 34,\n  \"sexo\": \"masculino\",\n  \"data_desaparecimento\": \"2026-06-01\",\n  \"local_desaparecimento\": \"Setor Fictício Norte\",\n  \"descricao_fisica\": \"Descrição fictícia\",\n  \"status\": \"desaparecido\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Pessoas - Listar (com paginação e filtro)",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/pessoas?page=1&limit=10&status=desaparecido" }
+    },
+    {
+      "name": "Pessoas - Buscar por ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/pessoas/{{pessoaId}}" }
+    },
+    {
+      "name": "Pessoas - Atualizar",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/pessoas/{{pessoaId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"descricao_fisica\": \"Descrição fictícia atualizada\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Pessoas - Atualizar status",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/pessoas/{{pessoaId}}/status",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"encontrado_vivo\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Pessoas - Histórico de avistamentos",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/pessoas/{{pessoaId}}/avistamentos" }
+    },
+    {
+      "name": "Pessoas - Excluir",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/api/pessoas/{{pessoaId}}" }
+    },
+    {
+      "name": "Avistamentos - Registrar",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/avistamentos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pessoa_id\": 1,\n  \"data_avistamento\": \"2026-06-15\",\n  \"local_avistamento\": \"Zona Teste Sul\",\n  \"descricao\": \"Relato fictício de avistamento\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Avistamentos - Listar",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/avistamentos?page=1&limit=10" }
+    },
+    {
+      "name": "Locais de Apoio - Cadastrar",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/locais-apoio",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Abrigo Fictício Central\",\n  \"tipo\": \"abrigo\",\n  \"endereco\": \"Rua Fictícia, 123\",\n  \"capacidade\": 100\n}"
+        }
+      }
+    },
+    {
+      "name": "Locais de Apoio - Listar",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/locais-apoio?page=1&limit=10" }
+    },
+    {
+      "name": "Locais de Apoio - Buscar por ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/locais-apoio/1" }
+    },
+    {
+      "name": "Estatísticas Gerais",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/estatisticas" }
+    }
+  ]
+}
