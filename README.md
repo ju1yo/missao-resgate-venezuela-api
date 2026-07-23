@@ -10,7 +10,7 @@ Este projeto é uma **API REST acadêmica** desenvolvida para a disciplina de Pr
 
 - Node.js
 - Express
-- SQLite (via módulo nativo `node:sqlite` do Node.js — requer Node >= 22.13)
+- SQLite nativo Node
 - Swagger UI Express / OpenAPI (documentação)
 - dotenv
 
@@ -36,7 +36,7 @@ A API sobe por padrão em `http://localhost:3000`.
 
 ## Configuração do banco de dados
 
-O projeto usa **SQLite** via o módulo nativo `node:sqlite` do próprio Node.js, então não é necessário instalar um servidor de banco separado nem compilar dependências nativas. O arquivo do banco é criado automaticamente (com todas as tabelas) na primeira execução, no caminho definido pela variável `DATABASE_PATH`. Requer Node.js 22.13+ (o módulo ainda é considerado experimental pelo Node, mas totalmente funcional).
+O projeto usa **SQLite** via o módulo nativo `node:sqlite` do próprio Node.js, então não é necessário instalar um servidor de banco separado nem compilar dependências nativas. O arquivo do banco é criado automaticamente (com todas as tabelas) na primeira execução, no caminho definido pela variável `DATABASE_PATH`. Requer Node.js 22.13+.
 
 ## Variáveis de ambiente (`.env`)
 
@@ -130,4 +130,4 @@ missao-resgate-venezuela-api/
 
 ## Autor
 
-Nome completo do aluno: _[preencher]_
+Nome: Julyo Cesar Carvalho Oliveira_
